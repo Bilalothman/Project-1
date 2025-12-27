@@ -9,7 +9,7 @@ import Menu from './pages/Menu';
 import Account from './pages/Account';
 import Cart from './pages/Cart';
 import About from './pages/About';
-import Admin from './pages/Admin';  // Added import
+import Admin from './pages/Admin';
 
 function App() {
   return (
@@ -23,7 +23,7 @@ function App() {
             <Route path="/account" element={<Account />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/about" element={<About />} />
-            <Route path="/admin" element={<Admin />} />  // Added route
+            <Route path="/admin" element={<Admin />} />
           </Routes>
         </Router>
       </MenuProvider>

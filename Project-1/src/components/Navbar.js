@@ -23,7 +23,7 @@ function NavBar() {
         <LinkContainer to="/"><Nav.Link>Home</Nav.Link></LinkContainer>
         <LinkContainer to="/menu"><Nav.Link>Menu</Nav.Link></LinkContainer>
         <LinkContainer to="/account"><Nav.Link>Account</Nav.Link></LinkContainer>
-        <LinkContainer to="/cart"><Nav.Link>Cart ({cart.length})</Nav.Link></LinkContainer>  // 'cart' is now defined
+        <LinkContainer to="/cart"><Nav.Link>Cart ({cart.length})</Nav.Link></LinkContainer>
         <LinkContainer to="/about"><Nav.Link>About</Nav.Link></LinkContainer>
         {user && <LinkContainer to="/admin"><Nav.Link>Admin</Nav.Link></LinkContainer>}
         {user && <Nav.Link onClick={logout}>Logout</Nav.Link>}
