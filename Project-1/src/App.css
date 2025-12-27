@@ -1,0 +1,92 @@
+/* Import Google Fonts for elegance */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+/* Global body styles */
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  margin: 0;
+  padding: 0;
+}
+
+/* Hero section background (used in Home.js) */
+.hero-bg {
+  background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  color: white;
+}
+
+/* Fade-in animation for headings */
+.fade-in {
+  animation: fadeIn 2s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Hover effects for cards (used in Menu.js) */
+.hover-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* Enhanced shadow for cards and components */
+.shadow-lg {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Custom primary color (teal accent) */
+.text-primary {
+  color: #4ecdc4 !important;
+}
+
+/* Gradient buttons (overrides Bootstrap) */
+.btn-primary {
+  background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+  border: none;
+  transition: background 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(45deg, #4ecdc4, #ff6b6b);
+  transform: scale(1.05);
+}
+
+/* Additional utilities for responsiveness and beauty */
+.container {
+  max-width: 1200px;
+}
+
+.card {
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+.navbar {
+  border-bottom: 2px solid #4ecdc4;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .hero-bg {
+    min-height: 50vh;
+    text-align: center;
+  }
+  .display-4 {
+    font-size: 2rem;
+  }
+}
