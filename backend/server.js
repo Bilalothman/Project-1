@@ -27,7 +27,7 @@ const verifyToken = (req, res, next) => {
   const token = req.header('Authorization');
   if (!token) return res.status(401).json({ error: 'Access denied' });
   try {
-    req.user = jwt.verify(token, 'secretkey');  // Use env var for secret
+    req.user = jwt.verify(token, 'secretkey');
     next();
   } catch (err) {
     res.status(400).json({ error: 'Invalid token' });
@@ -71,7 +71,7 @@ app.get('/api/orders/:userId', verifyToken, (req, res) => {
 });
 
 app.post('/api/order', verifyToken, (req, res) => {
-  const { userId, items } = req.body;  // items: [{menuItemId, quantity}]
+  const { userId, items } = req.body;
   items.forEach(item => {
     db.query('SELECT price FROM menu WHERE id = ?', [item.menuItemId], (err, results) => {
       const total = results[0].price * item.quantity;
@@ -87,6 +87,25 @@ app.post('/api/menu', verifyToken, (req, res) => {
   db.query('INSERT INTO menu (name, price, category, description, image) VALUES (?, ?, ?, ?, ?)', [name, parseFloat(price), category, description, image], (err) => {
     if (err) return res.status(400).json({ error: 'Failed to add item' });
     res.json({ message: 'Item added' });
+  });
+});
+
+// Update Menu Item (Admin)
+app.put('/api/menu/:id', verifyToken, (req, res) => {
+  const { id } = req.params;
+  const { name, price, category, description, image } = req.body;
+  db.query('UPDATE menu SET name = ?, price = ?, category = ?, description = ?, image = ? WHERE id = ?', [name, parseFloat(price), category, description, image, id], (err) => {
+    if (err) return res.status(400).json({ error: 'Failed to update item' });
+    res.json({ message: 'Item updated' });
+  });
+});
+
+// Delete Menu Item (Admin)
+app.delete('/api/menu/:id', verifyToken, (req, res) => {
+  const { id } = req.params;
+  db.query('DELETE FROM menu WHERE id = ?', [id], (err) => {
+    if (err) return res.status(400).json({ error: 'Failed to delete item' });
+    res.json({ message: 'Item deleted' });
   });
 });
 

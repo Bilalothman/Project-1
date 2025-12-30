@@ -1,23 +1,60 @@
-import React, { useState, useContext } from 'react';
-import { Container, Row, Col, Form, Button, Alert } from 'react-bootstrap';
+import React, { useState, useEffect, useContext } from 'react';
+import { Container, Row, Col, Form, Button, Alert, Table, Modal } from 'react-bootstrap';
 import axios from 'axios';
 import { MenuContext } from '../context/MenuContext';
 
 function Admin() {
+  const [menu, setMenu] = useState([]);
   const [form, setForm] = useState({ name: '', price: '', category: 'appetizers', description: '', image: '' });
+  const [editing, setEditing] = useState(null);  // For edit mode
+  const [showModal, setShowModal] = useState(false);
   const [message, setMessage] = useState('');
   const { user } = useContext(MenuContext);
+
+  useEffect(() => {
+    fetchMenu();
+  }, []);
+
+  const fetchMenu = () => {
+    axios.get('http://localhost:3000/api/menu').then(res => setMenu(res.data));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!user) return alert('Login first');
     const token = localStorage.getItem('token');
     try {
-      await axios.post('http://localhost:3000/api/menu', form, { headers: { Authorization: token } });
-      setMessage('Item added successfully!');
+      if (editing) {
+        await axios.put(`http://localhost:3000/api/menu/${editing}`, form, { headers: { Authorization: token } });
+        setMessage('Item updated successfully!');
+      } else {
+        await axios.post('http://localhost:3000/api/menu', form, { headers: { Authorization: token } });
+        setMessage('Item added successfully!');
+      }
       setForm({ name: '', price: '', category: 'appetizers', description: '', image: '' });
+      setEditing(null);
+      setShowModal(false);
+      fetchMenu();
     } catch (err) {
-      setMessage('Error adding item');
+      setMessage('Error saving item');
+    }
+  };
+
+  const handleEdit = (item) => {
+    setForm(item);
+    setEditing(item.id);
+    setShowModal(true);
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this item?')) return;
+    const token = localStorage.getItem('token');
+    try {
+      await axios.delete(`http://localhost:3000/api/menu/${id}`, { headers: { Authorization: token } });
+      setMessage('Item deleted successfully!');
+      fetchMenu();
+    } catch (err) {
+      setMessage('Error deleting item');
     }
   };
 
@@ -25,10 +62,40 @@ function Admin() {
 
   return (
     <Container className="py-5">
-      <h2 className="text-center mb-4">Admin - Add Menu Item</h2>
+      <h2 className="text-center mb-4">Admin - Manage Menu</h2>
       {message && <Alert variant={message.includes('Error') ? 'danger' : 'success'}>{message}</Alert>}
-      <Row className="justify-content-center">
-        <Col md={6}>
+      <Button variant="primary" onClick={() => { setForm({ name: '', price: '', category: 'appetizers', description: '', image: '' }); setEditing(null); setShowModal(true); }}>Add New Item</Button>
+      <Table striped bordered hover className="mt-3">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Category</th>
+            <th>Description</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {menu.map(item => (
+            <tr key={item.id}>
+              <td>{item.name}</td>
+              <td>${item.price}</td>
+              <td>{item.category}</td>
+              <td>{item.description}</td>
+              <td>
+                <Button variant="warning" size="sm" onClick={() => handleEdit(item)}>Edit</Button>
+                <Button variant="danger" size="sm" className="ml-2" onClick={() => handleDelete(item.id)}>Delete</Button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>{editing ? 'Edit Item' : 'Add Item'}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
           <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3">
               <Form.Label>Name</Form.Label>
@@ -54,10 +121,10 @@ function Admin() {
               <Form.Label>Image URL</Form.Label>
               <Form.Control type="url" value={form.image} onChange={(e) => setForm({...form, image: e.target.value})} />
             </Form.Group>
-            <Button variant="primary" type="submit">Add Item</Button>
+            <Button variant="primary" type="submit">{editing ? 'Update' : 'Add'} Item</Button>
           </Form>
-        </Col>
-      </Row>
+        </Modal.Body>
+      </Modal>
     </Container>
   );
 }
